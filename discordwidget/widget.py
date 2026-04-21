@@ -36,6 +36,7 @@ class Widget:
 
         Args:
             guild_id (int): The ID of the guild.
+            timeout (float): Timeout in seconds for widget API requests.
         """
         self._guild_id = guild_id
         self._url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
