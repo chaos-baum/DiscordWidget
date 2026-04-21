@@ -31,15 +31,17 @@ class Widget:
         instant_invite (str): The instant invite URL for the guild.
     """
 
-    def __init__(self, guild_id: int) -> None:
+    def __init__(self, guild_id: int, timeout: float = 10.0) -> None:
         """Initializes a new instance of the DiscordWidget class.
 
         Args:
             guild_id (int): The ID of the guild.
+            timeout (float): Timeout in seconds for widget API requests.
         """
         self._guild_id = guild_id
         self._url = f"https://discord.com/api/guilds/{guild_id}/widget.json"
         self._widget_url = f"https://discord.com/widget?id={guild_id}"
+        self._timeout = timeout
 
         self._members: List[Member] = []
         self._channels: List[Channel] = []
@@ -68,20 +70,24 @@ class Widget:
         self, session: Optional[aiohttp.ClientSession] = None
     ) -> dict:
         if session:
-            async with session.get(self._url) as response:
+            async with session.get(
+                self._url, timeout=aiohttp.ClientTimeout(total=self._timeout)
+            ) as response:
                 if response.status != 200:
                     raise WidgetException(f"HTTP error: {response.status}")
                 return await response.json()
         else:
             async with aiohttp.ClientSession() as new_session:
-                async with new_session.get(self._url) as response:
+                async with new_session.get(
+                    self._url, timeout=aiohttp.ClientTimeout(total=self._timeout)
+                ) as response:
                     if response.status != 200:
                         raise WidgetException(f"HTTP error: {response.status}")
                     return await response.json()
 
     def _sync_request_json(self) -> dict:
         try:
-            r = requests.get(self._url)
+            r = requests.get(self._url, timeout=self._timeout)
             r.raise_for_status()  # This will raise an HTTPError if the HTTP request returned an unsuccessful status code
             return r.json()
         except requests.exceptions.HTTPError as http_err:
