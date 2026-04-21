@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "discordwidget"
-version = "0.2.0"
+version = "0.3.0"
 description = "A simple Python wrapper for the Discord Widget API."
 authors = ["Cedric Busacker <python@busacker.dev>"]
 readme = "README.md"
